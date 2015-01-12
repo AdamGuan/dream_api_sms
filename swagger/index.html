@@ -63,6 +63,7 @@
 </head>
 
 <body class="swagger-section">
+<!--
 <div id='header'>
   <div class="swagger-ui-wrap">
     <a id="logo" href="http://swagger.wordnik.com">swagger</a>
@@ -79,8 +80,45 @@
     </form>
   </div>
 </div>
+-->
+<div id="message-bar" class="swagger-ui-wrap"></div>
 
-<div id="message-bar" class="swagger-ui-wrap">&nbsp;</div>
+<div class="swagger-ui-wrap">
+	<div class="info" id="api_info">
+		<div class="info_title">返回码描述</div>
+		<div class="info_description">
+			<ul class="swagger-ui-wrap">
+				<li>0:成功</li>
+				<li>-1:失败</li>
+				<li>-2:已注册</li>
+				<li>-3:密码不符合规则</li>
+				<li>-4:没有注册</li>
+				<li>-5:用户名或密码错误</li>
+				<li>-6:签名错误</li>
+				<li>-7:包名错误</li>
+			</ul>
+		</div>
+	</div>	
+</div>
+
+<div class="swagger-ui-wrap">
+	<div class="info" id="api_info">
+		<div class="info_title">签名计算方法</div>
+		<div class="info_description">
+			<ul class="swagger-ui-wrap">
+				<li>//YmdHis</li>
+				<li>timestamp =  20150112143848</li>
+				<li>//32位md5</li>
+				<li>sign = timestamp+md5(pkg+timestamp)</li>
+				<li><br /><br />//例如:</li>
+				<li>pkg =  abc</li>
+				<li>timestamp =  20150112143848</li>
+				<li>sign = 20150112143848bfef5a1bbd18094ebc3f88534b382bb6</li>
+			</ul>
+		</div>
+	</div>	
+</div>
+
 <div id="swagger-ui-container" class="swagger-ui-wrap"></div>
 </body>
 </html>

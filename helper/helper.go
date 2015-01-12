@@ -12,7 +12,7 @@ import (
 	"net/http"
 	"strings"
 	"crypto/md5"
-	"net/url"
+	//"net/url"
 )
 
 var MyLog *logs.BeeLogger
@@ -66,15 +66,17 @@ func CreatePwd(num int) string {
 }
 
 //leanCloud curl
-func CurlLeanCloud(requestUri string, method string, requestData map[string]string) map[string]interface{} {
+func CurlLeanCloud(requestUri string, method string, requestData map[string]string,appId string,appKey string) map[string]interface{} {
 	geturl := requestUri
 	req, _ := http.NewRequest(method, geturl, nil)
 	data, _ := json.Marshal(requestData)
 	req.Body = ioutil.NopCloser(strings.NewReader(string(data)))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Add("User-Agent", "SSTS Browser/1.0")
-	req.Header.Add("X-AVOSCloud-Application-Id", "l7dn2hfzry3yxdtfhnhciy0jt00dqd3ysbees8pjdhonwjb4")
-	req.Header.Add("X-AVOSCloud-Application-Key", "76nib8wzexxcgaccrl9e4955ll8q11w1jwq36ofpx6u340q2")
+	//req.Header.Add("X-AVOSCloud-Application-Id", "l7dn2hfzry3yxdtfhnhciy0jt00dqd3ysbees8pjdhonwjb4")
+	req.Header.Add("X-AVOSCloud-Application-Id",appId)
+	//req.Header.Add("X-AVOSCloud-Application-Key", "76nib8wzexxcgaccrl9e4955ll8q11w1jwq36ofpx6u340q2")
+	req.Header.Add("X-AVOSCloud-Application-Key", appKey)
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
@@ -90,23 +92,18 @@ func CurlLeanCloud(requestUri string, method string, requestData map[string]stri
 }
 
 //检查签名
-func CheckSign(requestParames url.Values, key string) bool {
-	//key
-	//key := "test"
-	//计算sign
-	if signarray, ok := requestParames["sign"]; ok {
-		if sign := signarray[0]; len(signarray) > 0 {
-			requestParames.Del("sign")
-			str := requestParames.Encode() + "&key=" + key
-			sign2 := fmt.Sprintf("%x\r\n", md5.Sum([]byte(str)))
-			sign2 = strings.TrimSpace(sign2)
-			sign = strings.TrimSpace(sign)
-
-			if string(sign) == string(sign2) {
-				return true
-			}
+func CheckSign(sign string, pkg string) bool {
+	//sign = timestamp+md5(pkgname+timestamp)
+	if len(sign) == 46 && len(pkg) > 0{
+		timestamp := sign[0:14]
+		sign = sign[14:]
+		
+		str := pkg + timestamp
+		sign2 := fmt.Sprintf("%x\r\n", md5.Sum([]byte(str)))
+		sign2 = strings.TrimSpace(sign2)
+		if string(sign) == string(sign2) {
+			return true
 		}
 	}
-
 	return false
 }
