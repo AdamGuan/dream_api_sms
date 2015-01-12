@@ -31,8 +31,8 @@ CREATE TABLE IF NOT EXISTS `t_config_pkg` (
 DELETE FROM `t_config_pkg`;
 /*!40000 ALTER TABLE `t_config_pkg` DISABLE KEYS */;
 INSERT INTO `t_config_pkg` (`F_pkg`, `F_app_name`, `F_app_id`, `F_app_key`, `F_app_master_key`) VALUES
-	('abc', 'default', 'ogxif29tbur554rh6n2m9yefhajgqkjqwspvr4lzu9rczxvn', '2qdmwrqh979waj4emidd0yh07jcu9xm5rz4vuqam1bt4lq0k', '06midcv0qs66lq3w4e8r7s7njngcd18t19wv53huegtga47s'),
-	('com.readboy.gaokao.debug', 'com.readboy.gaokao.debug', 'ogxif29tbur554rh6n2m9yefhajgqkjqwspvr4lzu9rczxvn', '2qdmwrqh979waj4emidd0yh07jcu9xm5rz4vuqam1bt4lq0k', '06midcv0qs66lq3w4e8r7s7njngcd18t19wv53huegtga47s');
+	('abc', 'default', '1ogxif29tbur554rh6n2m9yefhajgqkjqwspvr4lzu9rczxvn', '2qdmwrqh979waj4emidd0yh07jcu9xm5rz4vuqam1bt4lq0k', '06midcv0qs66lq3w4e8r7s7njngcd18t19wv53huegtga47s'),
+	('com.readboy.gaokao.debug', 'com.readboy.gaokao.debug', '1ogxif29tbur554rh6n2m9yefhajgqkjqwspvr4lzu9rczxvn', '2qdmwrqh979waj4emidd0yh07jcu9xm5rz4vuqam1bt4lq0k', '06midcv0qs66lq3w4e8r7s7njngcd18t19wv53huegtga47s');
 /*!40000 ALTER TABLE `t_config_pkg` ENABLE KEYS */;
 
 
