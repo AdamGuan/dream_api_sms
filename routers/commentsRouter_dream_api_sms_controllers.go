@@ -69,4 +69,18 @@ func init() {
 			[]string{"get"},
 			nil})
 
+	beego.GlobalControllerRouter["dream_api_sms/controllers:TmpController"] = append(beego.GlobalControllerRouter["dream_api_sms/controllers:TmpController"],
+		beego.ControllerComments{
+			"DeleteAllUser",
+			`/alluser`,
+			[]string{"delete"},
+			nil})
+
+	beego.GlobalControllerRouter["dream_api_sms/controllers:TmpController"] = append(beego.GlobalControllerRouter["dream_api_sms/controllers:TmpController"],
+		beego.ControllerComments{
+			"DeleteUser",
+			`/user`,
+			[]string{"delete"},
+			nil})
+
 }
