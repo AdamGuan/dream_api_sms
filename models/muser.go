@@ -102,3 +102,18 @@ func (u *MUser) ModifyUserPwd(userName string,userPwd string)int{
 	}
 	return result
 }
+
+//获取用户的密码
+func (u *MUser) GetUserPwd(userName string)string{
+	pwd := ""
+	if len(userName) > 0{
+		o := orm.NewOrm()
+		var maps []orm.Params
+		num, err := o.Raw("SELECT F_user_password FROM t_user WHERE F_user_name=? LIMIT 1", userName).Values(&maps)
+		if err == nil && num > 0 {
+			pwd = maps[0]["F_user_password"].(string)
+		}
+	}
+	return pwd
+
+}

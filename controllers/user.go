@@ -9,29 +9,29 @@ import (
 	//"strings"
 )
 
-//短信
-type SmsController struct {
+//用户
+type UserController struct {
 	beego.Controller
 }
 
-// @Title 短信验证码验证
-// @Description 短信验证码验证
-// @Param	mobilePhoneNumber	path	string	true	"手机号码"
-// @Param	num			form	string	true	"验证码"
+// @Title 注册
+// @Description 注册
+// @Param	mobilePhoneNumber	form	string	true	"手机号码"
+// @Param	pwd			form	string	true	"密码"
 // @Param	sign			header	string	true	"签名"
 // @Param	pkg			header	string	true	"包名"
 // @Success	200 {object} models.MResp
 // @Failure 401 无权访问
-// @router /smsvalid/:mobilePhoneNumber [post]
-func (u *SmsController) Smsvalid() {
+// @router /register [post]
+func (u *UserController) Register() {
 	//ini return
 	datas := map[string]interface{}{"responseNo": -1}
 	//model ini
-	var smsObj *models.MSms
+	var userObj *models.MUser
 	//parse request parames
 	u.Ctx.Request.ParseForm()
-	mobilePhoneNumber := u.Ctx.Input.Param(":mobilePhoneNumber")
-	num := u.Ctx.Request.FormValue("num")
+	mobilePhoneNumber := u.Ctx.Request.FormValue("mobilePhoneNumber")
+	pwd := u.Ctx.Request.FormValue("pwd")
 	//check sign
 	pkg := u.Ctx.Request.Header.Get("Pkg")
 	sign := u.Ctx.Request.Header.Get("Sign")
@@ -45,15 +45,10 @@ func (u *SmsController) Smsvalid() {
 		}
 	}
 	//检查参数
-	if datas["responseNo"] == 0 && len(mobilePhoneNumber) > 0 && len(num) > 0 {
+	if datas["responseNo"] == 0 && len(mobilePhoneNumber) > 0 && len(pwd) > 0 {
 		datas["responseNo"] = -1
-		pkgConfig := pkgObj.GetPkgConfig(pkg)
-		if len(pkgConfig) > 0{
-			res := smsObj.ValidMsm(num,mobilePhoneNumber,pkgConfig["F_app_id"],pkgConfig["F_app_key"])
-			if len(res) == 0{
-				datas["responseNo"] = 0
-			}
-		}
+		res2 := userObj.AddUser(mobilePhoneNumber,pwd)
+		datas["responseNo"] = res2
 	}else if datas["responseNo"] == 0{
 		datas["responseNo"] = -1
 	}
@@ -67,23 +62,24 @@ func (u *SmsController) Smsvalid() {
 	u.ServeJson()
 }
 
-// @Title 发送一条短信验证码(注册时)
-// @Description 发送一条短信验证码(注册时)
-// @Param	mobilePhoneNumber	path	string	true	手机号码
+// @Title 重置密码
+// @Description 重置密码
+// @Param	mobilePhoneNumber	form	string	true	手机号码
+// @Param	pwd			form	string	true	密码
 // @Param	sign			header	string	true	签名
 // @Param	pkg			header	string	true	包名
 // @Success	200 {object} models.MResp
 // @Failure 401 无权访问
-// @router /register/:mobilePhoneNumber [get]
-func (u *SmsController) RegisterGetSms() {
+// @router /resetpwd [put]
+func (u *UserController) ResetPwd() {
 	//ini return
 	datas := map[string]interface{}{"responseNo": -1}
 	//model ini
-	var smsObj *models.MSms
 	var userObj *models.MUser
 	//parse request parames
 	u.Ctx.Request.ParseForm()
-	mobilePhoneNumber := u.Ctx.Input.Param(":mobilePhoneNumber")
+	mobilePhoneNumber := u.Ctx.Request.FormValue("mobilePhoneNumber")
+	pwd := u.Ctx.Request.FormValue("pwd")
 	//check sign
 	pkg := u.Ctx.Request.Header.Get("Pkg")
 	sign := u.Ctx.Request.Header.Get("Sign")
@@ -97,24 +93,13 @@ func (u *SmsController) RegisterGetSms() {
 		}
 	}
 	//检查参数
-	if datas["responseNo"] == 0 && len(mobilePhoneNumber) > 0 {
+	if datas["responseNo"] == 0 && len(mobilePhoneNumber) > 0 && len(pwd) > 0 {
 		datas["responseNo"] = -1
-		res2 := userObj.CheckUserNameValid(mobilePhoneNumber)
-		if res2 == 0{
-			pkgConfig := pkgObj.GetPkgConfig(pkg)
-			if len(pkgConfig) > 0{
-				res := smsObj.GetMsm(mobilePhoneNumber,pkgConfig["F_app_id"],pkgConfig["F_app_key"])
-				if len(res) == 0{
-					datas["responseNo"] = 0
-				}
-			}
-		}else{
-			datas["responseNo"] = res2
-		}
+		res2 := userObj.ModifyUserPwd(mobilePhoneNumber,pwd)
+		datas["responseNo"] = res2
 	}else if datas["responseNo"] == 0{
 		datas["responseNo"] = -1
 	}
-
 	//return
 	if datas["responseNo"] == -6 || datas["responseNo"] == -7 {
 		u.Ctx.ResponseWriter.Header().Set("Content-Type", "application/json; charset=utf-8")
@@ -125,23 +110,24 @@ func (u *SmsController) RegisterGetSms() {
 	u.ServeJson()
 }
 
-// @Title 发送一条短信验证码(重置密码时)
-// @Description 发送一条短信验证码(重置密码时)
+// @Title 登录验证
+// @Description 登录验证
 // @Param	mobilePhoneNumber	path	string	true	手机号码
+// @Param	pwd			query	string	true	密码
 // @Param	sign			header	string	true	签名
 // @Param	pkg			header	string	true	包名
 // @Success	200 {object} models.MResp
 // @Failure 401 无权访问
-// @router /resetpwd/:mobilePhoneNumber [get]
-func (u *SmsController) ResetPwdGetSms() {
+// @router /login/:mobilePhoneNumber [get]
+func (u *UserController) CheckUserAndPwd() {
 	//ini return
 	datas := map[string]interface{}{"responseNo": -1}
 	//model ini
-	var smsObj *models.MSms
 	var userObj *models.MUser
 	//parse request parames
 	u.Ctx.Request.ParseForm()
 	mobilePhoneNumber := u.Ctx.Input.Param(":mobilePhoneNumber")
+	pwd := u.Ctx.Request.FormValue("pwd")	
 	//check sign
 	pkg := u.Ctx.Request.Header.Get("Pkg")
 	sign := u.Ctx.Request.Header.Get("Sign")
@@ -155,24 +141,17 @@ func (u *SmsController) ResetPwdGetSms() {
 		}
 	}
 	//检查参数
-	if datas["responseNo"] == 0 && len(mobilePhoneNumber) > 0 {
+	if datas["responseNo"] == 0 && len(mobilePhoneNumber) > 0 && len(pwd) > 0 {
 		datas["responseNo"] = -1
-		res := userObj.CheckUserNameExists(mobilePhoneNumber)
-		if res {
-			pkgConfig := pkgObj.GetPkgConfig(pkg)
-			if len(pkgConfig) > 0 {
-				res := smsObj.GetMsm(mobilePhoneNumber,pkgConfig["F_app_id"],pkgConfig["F_app_key"])
-				if len(res) == 0{
-					datas["responseNo"] = 0
-				}
-			}
+		res := userObj.CheckUserAndPwd(mobilePhoneNumber,pwd)
+		if res{
+			datas["responseNo"] = 0
 		}else{
-			datas["responseNo"] = -4
+			datas["responseNo"] = -5
 		}
 	}else if datas["responseNo"] == 0{
-		datas["responseNo"] = -4
+		datas["responseNo"] = -5
 	}
-
 	//return
 	if datas["responseNo"] == -6 || datas["responseNo"] == -7 {
 		u.Ctx.ResponseWriter.Header().Set("Content-Type", "application/json; charset=utf-8")
@@ -183,19 +162,18 @@ func (u *SmsController) ResetPwdGetSms() {
 	u.ServeJson()
 }
 
-// @Title 发送一条短信验证码(找回密码时)
-// @Description 发送一条短信验证码(找回密码时)
-// @Param	mobilePhoneNumber	path	string	true	手机号码
-// @Param	sign			header	string	true	签名
-// @Param	pkg			header	string	true	包名
-// @Success	200 {object} models.MResp
+// @Title 找回密码
+// @Description 找回密码
+// @Param	mobilePhoneNumber	path	string	true	"手机号码"
+// @Param	sign			header	string	true	"签名"
+// @Param	pkg			header	string	true	"包名"
+// @Success	200 {object} models.MFindPwdResp
 // @Failure 401 无权访问
 // @router /pwd/:mobilePhoneNumber [get]
-func (u *SmsController) FindPwdGetSms() {
+func (u *UserController) FindPwd() {
 	//ini return
 	datas := map[string]interface{}{"responseNo": -1}
 	//model ini
-	var smsObj *models.MSms
 	var userObj *models.MUser
 	//parse request parames
 	u.Ctx.Request.ParseForm()
@@ -215,22 +193,73 @@ func (u *SmsController) FindPwdGetSms() {
 	//检查参数
 	if datas["responseNo"] == 0 && len(mobilePhoneNumber) > 0 {
 		datas["responseNo"] = -1
-		res := userObj.CheckUserNameExists(mobilePhoneNumber)
-		if res {
-			pkgConfig := pkgObj.GetPkgConfig(pkg)
-			if len(pkgConfig) > 0 {
-				res := smsObj.GetMsm(mobilePhoneNumber,pkgConfig["F_app_id"],pkgConfig["F_app_key"])
-				if len(res) == 0{
-					datas["responseNo"] = 0
-				}
+		if userObj.CheckUserNameExists(mobilePhoneNumber){
+			res := userObj.GetUserPwd(mobilePhoneNumber)
+			if len(res) > 0{
+				datas["responseNo"] = 0
+				datas["password"] = res
 			}
 		}else{
 			datas["responseNo"] = -4
 		}
+		
 	}else if datas["responseNo"] == 0{
-		datas["responseNo"] = -4
+		datas["responseNo"] = -1
 	}
+	//return
+	if datas["responseNo"] == -6 || datas["responseNo"] == -7 {
+		u.Ctx.ResponseWriter.Header().Set("Content-Type", "application/json; charset=utf-8")
+		u.Ctx.ResponseWriter.WriteHeader(http.StatusUnauthorized)
+	} 
+	datas["responseMsg"] = models.ConfigMyResponse[helper.IntToString(datas["responseNo"].(int))]
+	u.Data["json"] = datas
+	u.ServeJson()
+}
 
+// @Title 修改密码
+// @Description 修改密码
+// @Param	mobilePhoneNumber	path	string	true	手机号码
+// @Param	oldPwd			form	string	true	旧密码
+// @Param	newPwd			form	string	true	新密码
+// @Param	sign			header	string	true	签名
+// @Param	pkg			header	string	true	包名
+// @Success	200 {object} models.MResp
+// @Failure 401 无权访问
+// @router /pwd/:mobilePhoneNumber [put]
+func (u *UserController) ModifyPwd() {
+	//ini return
+	datas := map[string]interface{}{"responseNo": -1}
+	//model ini
+	var userObj *models.MUser
+	//parse request parames
+	u.Ctx.Request.ParseForm()
+	mobilePhoneNumber := u.Ctx.Input.Param(":mobilePhoneNumber")
+	oldPwd := u.Ctx.Request.FormValue("oldPwd")
+	newPwd := u.Ctx.Request.FormValue("newPwd")
+	//check sign
+	pkg := u.Ctx.Request.Header.Get("Pkg")
+	sign := u.Ctx.Request.Header.Get("Sign")
+	datas["responseNo"] = -6
+	var pkgObj *models.MPkg
+	if !pkgObj.CheckPkgExists(pkg){
+		datas["responseNo"] = -7
+	}else{	
+		if result := helper.CheckSign(sign, pkg); result {
+			datas["responseNo"] = 0
+		}
+	}
+	//检查参数
+	if datas["responseNo"] == 0 && len(mobilePhoneNumber) > 0 && len(oldPwd) > 0 && len(newPwd) > 0 {
+		datas["responseNo"] = -1
+		if userObj.CheckUserAndPwd(mobilePhoneNumber,oldPwd){
+			res2 := userObj.ModifyUserPwd(mobilePhoneNumber,newPwd)
+			datas["responseNo"] = res2
+		}else{
+			datas["responseNo"] = -8
+		}
+	}else if datas["responseNo"] == 0{
+		datas["responseNo"] = -1
+	}
 	//return
 	if datas["responseNo"] == -6 || datas["responseNo"] == -7 {
 		u.Ctx.ResponseWriter.Header().Set("Content-Type", "application/json; charset=utf-8")

@@ -1,5 +1,5 @@
 // @APIVersion 1.0.0
-// @Title 短信验证 API
+// @Title 用户系统 API
 package routers
 
 import (
@@ -13,6 +13,11 @@ func init() {
 		beego.NSNamespace("/sms",
 			beego.NSInclude(
 				&controllers.SmsController{},
+			),
+		),
+		beego.NSNamespace("/user",
+			beego.NSInclude(
+				&controllers.UserController{},
 			),
 		),
 	)
