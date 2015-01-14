@@ -1,18 +1,19 @@
 package helper
 
 import (
+	"crypto/md5"
+	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
-	"os"
-	"strconv"
-	"crypto/tls"
-	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"strconv"
 	"strings"
-	"crypto/md5"
 	//"net/url"
+	"time"
 )
 
 var MyLog *logs.BeeLogger
@@ -66,7 +67,7 @@ func CreatePwd(num int) string {
 }
 
 //leanCloud curl
-func CurlLeanCloud(requestUri string, method string, requestData map[string]string,appId string,appKey string) map[string]interface{} {
+func CurlLeanCloud(requestUri string, method string, requestData map[string]string, appId string, appKey string) map[string]interface{} {
 	geturl := requestUri
 	req, _ := http.NewRequest(method, geturl, nil)
 	data, _ := json.Marshal(requestData)
@@ -74,7 +75,7 @@ func CurlLeanCloud(requestUri string, method string, requestData map[string]stri
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Add("User-Agent", "SSTS Browser/1.0")
 	//req.Header.Add("X-AVOSCloud-Application-Id", "l7dn2hfzry3yxdtfhnhciy0jt00dqd3ysbees8pjdhonwjb4")
-	req.Header.Add("X-AVOSCloud-Application-Id",appId)
+	req.Header.Add("X-AVOSCloud-Application-Id", appId)
 	//req.Header.Add("X-AVOSCloud-Application-Key", "76nib8wzexxcgaccrl9e4955ll8q11w1jwq36ofpx6u340q2")
 	req.Header.Add("X-AVOSCloud-Application-Key", appKey)
 	client := &http.Client{
@@ -94,10 +95,20 @@ func CurlLeanCloud(requestUri string, method string, requestData map[string]stri
 //检查签名
 func CheckSign(sign string, pkg string) bool {
 	//sign = timestamp+md5(pkgname+timestamp)
-	if len(sign) == 46 && len(pkg) > 0{
+	if len(sign) == 46 && len(pkg) > 0 {
 		timestamp := sign[0:14]
+		//检测是否超时
+		if beego.RunMode != "dev"{
+			nowTime, _ := strconv.Atoi(time.Now().Format("20060102150405"))
+			requestTime, _ := strconv.Atoi(timestamp)
+			timedistince := nowTime - requestTime
+			fmt.Println(timedistince)
+			if timedistince > 60*5 {
+				return false
+			}
+		}
+
 		sign = sign[14:]
-		
 		str := pkg + timestamp
 		sign2 := fmt.Sprintf("%x\r\n", md5.Sum([]byte(str)))
 		sign2 = strings.TrimSpace(sign2)

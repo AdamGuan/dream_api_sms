@@ -6,9 +6,16 @@ import (
 	"dream_api_sms/helper"
 )
 
-//用户
+//临时工具
 type TmpController struct {
 	beego.Controller
+}
+
+//json echo
+func (u0 *TmpController) jsonEcho(datas map[string]interface{},u *TmpController) {
+	datas["responseMsg"] = models.ConfigMyResponse[helper.IntToString(datas["responseNo"].(int))]
+	u.Data["json"] = datas
+	u.ServeJson()
 }
 
 // @Title 清空全部用户数据(临时用)
@@ -23,9 +30,7 @@ func (u *TmpController) DeleteAllUser() {
 	var tmpObj *models.MTmp
 	tmpObj.DeleteAllUser()
 	//return
-	datas["responseMsg"] = models.ConfigMyResponse[helper.IntToString(datas["responseNo"].(int))]
-	u.Data["json"] = datas
-	u.ServeJson()
+	u.jsonEcho(datas,u)
 }
 
 // @Title 清空指定用户数据(临时用)
@@ -44,7 +49,5 @@ func (u *TmpController) DeleteUser() {
 	var tmpObj *models.MTmp
 	tmpObj.DeleteUser(mobilePhoneNumber)
 	//return
-	datas["responseMsg"] = models.ConfigMyResponse[helper.IntToString(datas["responseNo"].(int))]
-	u.Data["json"] = datas
-	u.ServeJson()
+	u.jsonEcho(datas,u)
 }

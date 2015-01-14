@@ -14,6 +14,33 @@ type SmsController struct {
 	beego.Controller
 }
 
+//json echo
+func (u0 *SmsController) jsonEcho(datas map[string]interface{},u *SmsController) {
+	if datas["responseNo"] == -6 || datas["responseNo"] == -7 {
+		u.Ctx.ResponseWriter.Header().Set("Content-Type", "application/json; charset=utf-8")
+		u.Ctx.ResponseWriter.WriteHeader(http.StatusUnauthorized)
+	} 
+	datas["responseMsg"] = models.ConfigMyResponse[helper.IntToString(datas["responseNo"].(int))]
+	u.Data["json"] = datas
+	u.ServeJson()
+}
+
+//sign check
+func (u0 *SmsController) checkSign(u *SmsController)int {
+	result := -6
+	pkg := u.Ctx.Request.Header.Get("Pkg")
+	sign := u.Ctx.Request.Header.Get("Sign")
+	var pkgObj *models.MPkg
+	if !pkgObj.CheckPkgExists(pkg){
+		result = -7
+	}else{	
+		if re := helper.CheckSign(sign, pkg); re {
+			result = 0
+		}
+	}
+	return result
+}
+
 // @Title 短信验证码验证
 // @Description 短信验证码验证
 // @Param	mobilePhoneNumber	path	string	true	"手机号码"
@@ -28,22 +55,14 @@ func (u *SmsController) Smsvalid() {
 	datas := map[string]interface{}{"responseNo": -1}
 	//model ini
 	var smsObj *models.MSms
+	var pkgObj *models.MPkg
 	//parse request parames
 	u.Ctx.Request.ParseForm()
 	mobilePhoneNumber := u.Ctx.Input.Param(":mobilePhoneNumber")
 	num := u.Ctx.Request.FormValue("num")
-	//check sign
 	pkg := u.Ctx.Request.Header.Get("Pkg")
-	sign := u.Ctx.Request.Header.Get("Sign")
-	datas["responseNo"] = -6
-	var pkgObj *models.MPkg
-	if !pkgObj.CheckPkgExists(pkg){
-		datas["responseNo"] = -7
-	}else{	
-		if result := helper.CheckSign(sign, pkg); result {
-			datas["responseNo"] = 0
-		}
-	}
+	//check sign
+	datas["responseNo"] = u.checkSign(u)
 	//检查参数
 	if datas["responseNo"] == 0 && len(mobilePhoneNumber) > 0 && len(num) > 0 {
 		datas["responseNo"] = -1
@@ -58,13 +77,7 @@ func (u *SmsController) Smsvalid() {
 		datas["responseNo"] = -1
 	}
 	//return
-	if datas["responseNo"] == -6 || datas["responseNo"] == -7 {
-		u.Ctx.ResponseWriter.Header().Set("Content-Type", "application/json; charset=utf-8")
-		u.Ctx.ResponseWriter.WriteHeader(http.StatusUnauthorized)
-	} 
-	datas["responseMsg"] = models.ConfigMyResponse[helper.IntToString(datas["responseNo"].(int))]
-	u.Data["json"] = datas
-	u.ServeJson()
+	u.jsonEcho(datas,u)
 }
 
 // @Title 发送一条短信验证码(注册时)
@@ -81,21 +94,13 @@ func (u *SmsController) RegisterGetSms() {
 	//model ini
 	var smsObj *models.MSms
 	var userObj *models.MUser
+	var pkgObj *models.MPkg
 	//parse request parames
 	u.Ctx.Request.ParseForm()
 	mobilePhoneNumber := u.Ctx.Input.Param(":mobilePhoneNumber")
-	//check sign
 	pkg := u.Ctx.Request.Header.Get("Pkg")
-	sign := u.Ctx.Request.Header.Get("Sign")
-	datas["responseNo"] = -6
-	var pkgObj *models.MPkg
-	if !pkgObj.CheckPkgExists(pkg){
-		datas["responseNo"] = -7
-	}else{	
-		if result := helper.CheckSign(sign, pkg); result {
-			datas["responseNo"] = 0
-		}
-	}
+	//check sign
+	datas["responseNo"] = u.checkSign(u)
 	//检查参数
 	if datas["responseNo"] == 0 && len(mobilePhoneNumber) > 0 {
 		datas["responseNo"] = -1
@@ -116,13 +121,7 @@ func (u *SmsController) RegisterGetSms() {
 	}
 
 	//return
-	if datas["responseNo"] == -6 || datas["responseNo"] == -7 {
-		u.Ctx.ResponseWriter.Header().Set("Content-Type", "application/json; charset=utf-8")
-		u.Ctx.ResponseWriter.WriteHeader(http.StatusUnauthorized)
-	} 
-	datas["responseMsg"] = models.ConfigMyResponse[helper.IntToString(datas["responseNo"].(int))]
-	u.Data["json"] = datas
-	u.ServeJson()
+	u.jsonEcho(datas,u)
 }
 
 // @Title 发送一条短信验证码(重置密码时)
@@ -139,21 +138,13 @@ func (u *SmsController) ResetPwdGetSms() {
 	//model ini
 	var smsObj *models.MSms
 	var userObj *models.MUser
+	var pkgObj *models.MPkg
 	//parse request parames
 	u.Ctx.Request.ParseForm()
 	mobilePhoneNumber := u.Ctx.Input.Param(":mobilePhoneNumber")
-	//check sign
 	pkg := u.Ctx.Request.Header.Get("Pkg")
-	sign := u.Ctx.Request.Header.Get("Sign")
-	datas["responseNo"] = -6
-	var pkgObj *models.MPkg
-	if !pkgObj.CheckPkgExists(pkg){
-		datas["responseNo"] = -7
-	}else{	
-		if result := helper.CheckSign(sign, pkg); result {
-			datas["responseNo"] = 0
-		}
-	}
+	//check sign
+	datas["responseNo"] = u.checkSign(u)
 	//检查参数
 	if datas["responseNo"] == 0 && len(mobilePhoneNumber) > 0 {
 		datas["responseNo"] = -1
@@ -174,13 +165,7 @@ func (u *SmsController) ResetPwdGetSms() {
 	}
 
 	//return
-	if datas["responseNo"] == -6 || datas["responseNo"] == -7 {
-		u.Ctx.ResponseWriter.Header().Set("Content-Type", "application/json; charset=utf-8")
-		u.Ctx.ResponseWriter.WriteHeader(http.StatusUnauthorized)
-	} 
-	datas["responseMsg"] = models.ConfigMyResponse[helper.IntToString(datas["responseNo"].(int))]
-	u.Data["json"] = datas
-	u.ServeJson()
+	u.jsonEcho(datas,u)
 }
 
 // @Title 发送一条短信验证码(找回密码时)
@@ -197,21 +182,13 @@ func (u *SmsController) FindPwdGetSms() {
 	//model ini
 	var smsObj *models.MSms
 	var userObj *models.MUser
+	var pkgObj *models.MPkg
 	//parse request parames
 	u.Ctx.Request.ParseForm()
 	mobilePhoneNumber := u.Ctx.Input.Param(":mobilePhoneNumber")
-	//check sign
 	pkg := u.Ctx.Request.Header.Get("Pkg")
-	sign := u.Ctx.Request.Header.Get("Sign")
-	datas["responseNo"] = -6
-	var pkgObj *models.MPkg
-	if !pkgObj.CheckPkgExists(pkg){
-		datas["responseNo"] = -7
-	}else{	
-		if result := helper.CheckSign(sign, pkg); result {
-			datas["responseNo"] = 0
-		}
-	}
+	//check sign
+	datas["responseNo"] = u.checkSign(u)
 	//检查参数
 	if datas["responseNo"] == 0 && len(mobilePhoneNumber) > 0 {
 		datas["responseNo"] = -1
@@ -232,11 +209,5 @@ func (u *SmsController) FindPwdGetSms() {
 	}
 
 	//return
-	if datas["responseNo"] == -6 || datas["responseNo"] == -7 {
-		u.Ctx.ResponseWriter.Header().Set("Content-Type", "application/json; charset=utf-8")
-		u.Ctx.ResponseWriter.WriteHeader(http.StatusUnauthorized)
-	} 
-	datas["responseMsg"] = models.ConfigMyResponse[helper.IntToString(datas["responseNo"].(int))]
-	u.Data["json"] = datas
-	u.ServeJson()
+	u.jsonEcho(datas,u)
 }

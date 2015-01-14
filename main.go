@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"runtime"
 )
 
 func page_not_found(rw http.ResponseWriter, r *http.Request) {
@@ -17,8 +18,8 @@ func page_not_found(rw http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	if beego.RunMode == "dev" {
-		beego.DirectoryIndex = true
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	if beego.RunMode == "dev"{
 		beego.StaticDir["/swagger"] = "swagger"
 	}
 	beego.Errorhandler("404", page_not_found)

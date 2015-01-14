@@ -14,6 +14,33 @@ type UserController struct {
 	beego.Controller
 }
 
+//json echo
+func (u0 *UserController) jsonEcho(datas map[string]interface{},u *UserController) {
+	if datas["responseNo"] == -6 || datas["responseNo"] == -7 {
+		u.Ctx.ResponseWriter.Header().Set("Content-Type", "application/json; charset=utf-8")
+		u.Ctx.ResponseWriter.WriteHeader(http.StatusUnauthorized)
+	} 
+	datas["responseMsg"] = models.ConfigMyResponse[helper.IntToString(datas["responseNo"].(int))]
+	u.Data["json"] = datas
+	u.ServeJson()
+}
+
+//sign check
+func (u0 *UserController) checkSign(u *UserController)int {
+	result := -6
+	pkg := u.Ctx.Request.Header.Get("Pkg")
+	sign := u.Ctx.Request.Header.Get("Sign")
+	var pkgObj *models.MPkg
+	if !pkgObj.CheckPkgExists(pkg){
+		result = -7
+	}else{	
+		if re := helper.CheckSign(sign, pkg); re {
+			result = 0
+		}
+	}
+	return result
+}
+
 // @Title 注册
 // @Description 注册
 // @Param	mobilePhoneNumber	form	string	true	"手机号码"
@@ -33,17 +60,7 @@ func (u *UserController) Register() {
 	mobilePhoneNumber := u.Ctx.Request.FormValue("mobilePhoneNumber")
 	pwd := u.Ctx.Request.FormValue("pwd")
 	//check sign
-	pkg := u.Ctx.Request.Header.Get("Pkg")
-	sign := u.Ctx.Request.Header.Get("Sign")
-	datas["responseNo"] = -6
-	var pkgObj *models.MPkg
-	if !pkgObj.CheckPkgExists(pkg){
-		datas["responseNo"] = -7
-	}else{	
-		if result := helper.CheckSign(sign, pkg); result {
-			datas["responseNo"] = 0
-		}
-	}
+	datas["responseNo"] = u.checkSign(u)
 	//检查参数
 	if datas["responseNo"] == 0 && len(mobilePhoneNumber) > 0 && len(pwd) > 0 {
 		datas["responseNo"] = -1
@@ -53,13 +70,7 @@ func (u *UserController) Register() {
 		datas["responseNo"] = -1
 	}
 	//return
-	if datas["responseNo"] == -6 || datas["responseNo"] == -7 {
-		u.Ctx.ResponseWriter.Header().Set("Content-Type", "application/json; charset=utf-8")
-		u.Ctx.ResponseWriter.WriteHeader(http.StatusUnauthorized)
-	} 
-	datas["responseMsg"] = models.ConfigMyResponse[helper.IntToString(datas["responseNo"].(int))]
-	u.Data["json"] = datas
-	u.ServeJson()
+	u.jsonEcho(datas,u)
 }
 
 // @Title 重置密码
@@ -81,17 +92,7 @@ func (u *UserController) ResetPwd() {
 	mobilePhoneNumber := u.Ctx.Request.FormValue("mobilePhoneNumber")
 	pwd := u.Ctx.Request.FormValue("pwd")
 	//check sign
-	pkg := u.Ctx.Request.Header.Get("Pkg")
-	sign := u.Ctx.Request.Header.Get("Sign")
-	datas["responseNo"] = -6
-	var pkgObj *models.MPkg
-	if !pkgObj.CheckPkgExists(pkg){
-		datas["responseNo"] = -7
-	}else{	
-		if result := helper.CheckSign(sign, pkg); result {
-			datas["responseNo"] = 0
-		}
-	}
+	datas["responseNo"] = u.checkSign(u)
 	//检查参数
 	if datas["responseNo"] == 0 && len(mobilePhoneNumber) > 0 && len(pwd) > 0 {
 		datas["responseNo"] = -1
@@ -101,13 +102,7 @@ func (u *UserController) ResetPwd() {
 		datas["responseNo"] = -1
 	}
 	//return
-	if datas["responseNo"] == -6 || datas["responseNo"] == -7 {
-		u.Ctx.ResponseWriter.Header().Set("Content-Type", "application/json; charset=utf-8")
-		u.Ctx.ResponseWriter.WriteHeader(http.StatusUnauthorized)
-	} 
-	datas["responseMsg"] = models.ConfigMyResponse[helper.IntToString(datas["responseNo"].(int))]
-	u.Data["json"] = datas
-	u.ServeJson()
+	u.jsonEcho(datas,u)
 }
 
 // @Title 登录验证
@@ -129,17 +124,7 @@ func (u *UserController) CheckUserAndPwd() {
 	mobilePhoneNumber := u.Ctx.Input.Param(":mobilePhoneNumber")
 	pwd := u.Ctx.Request.FormValue("pwd")	
 	//check sign
-	pkg := u.Ctx.Request.Header.Get("Pkg")
-	sign := u.Ctx.Request.Header.Get("Sign")
-	datas["responseNo"] = -6
-	var pkgObj *models.MPkg
-	if !pkgObj.CheckPkgExists(pkg){
-		datas["responseNo"] = -7
-	}else{	
-		if result := helper.CheckSign(sign, pkg); result {
-			datas["responseNo"] = 0
-		}
-	}
+	datas["responseNo"] = u.checkSign(u)
 	//检查参数
 	if datas["responseNo"] == 0 && len(mobilePhoneNumber) > 0 && len(pwd) > 0 {
 		datas["responseNo"] = -1
@@ -153,13 +138,7 @@ func (u *UserController) CheckUserAndPwd() {
 		datas["responseNo"] = -5
 	}
 	//return
-	if datas["responseNo"] == -6 || datas["responseNo"] == -7 {
-		u.Ctx.ResponseWriter.Header().Set("Content-Type", "application/json; charset=utf-8")
-		u.Ctx.ResponseWriter.WriteHeader(http.StatusUnauthorized)
-	} 
-	datas["responseMsg"] = models.ConfigMyResponse[helper.IntToString(datas["responseNo"].(int))]
-	u.Data["json"] = datas
-	u.ServeJson()
+	u.jsonEcho(datas,u)
 }
 
 // @Title 找回密码
@@ -179,17 +158,7 @@ func (u *UserController) FindPwd() {
 	u.Ctx.Request.ParseForm()
 	mobilePhoneNumber := u.Ctx.Input.Param(":mobilePhoneNumber")
 	//check sign
-	pkg := u.Ctx.Request.Header.Get("Pkg")
-	sign := u.Ctx.Request.Header.Get("Sign")
-	datas["responseNo"] = -6
-	var pkgObj *models.MPkg
-	if !pkgObj.CheckPkgExists(pkg){
-		datas["responseNo"] = -7
-	}else{	
-		if result := helper.CheckSign(sign, pkg); result {
-			datas["responseNo"] = 0
-		}
-	}
+	datas["responseNo"] = u.checkSign(u)
 	//检查参数
 	if datas["responseNo"] == 0 && len(mobilePhoneNumber) > 0 {
 		datas["responseNo"] = -1
@@ -207,13 +176,7 @@ func (u *UserController) FindPwd() {
 		datas["responseNo"] = -1
 	}
 	//return
-	if datas["responseNo"] == -6 || datas["responseNo"] == -7 {
-		u.Ctx.ResponseWriter.Header().Set("Content-Type", "application/json; charset=utf-8")
-		u.Ctx.ResponseWriter.WriteHeader(http.StatusUnauthorized)
-	} 
-	datas["responseMsg"] = models.ConfigMyResponse[helper.IntToString(datas["responseNo"].(int))]
-	u.Data["json"] = datas
-	u.ServeJson()
+	u.jsonEcho(datas,u)
 }
 
 // @Title 修改密码
@@ -237,17 +200,7 @@ func (u *UserController) ModifyPwd() {
 	oldPwd := u.Ctx.Request.FormValue("oldPwd")
 	newPwd := u.Ctx.Request.FormValue("newPwd")
 	//check sign
-	pkg := u.Ctx.Request.Header.Get("Pkg")
-	sign := u.Ctx.Request.Header.Get("Sign")
-	datas["responseNo"] = -6
-	var pkgObj *models.MPkg
-	if !pkgObj.CheckPkgExists(pkg){
-		datas["responseNo"] = -7
-	}else{	
-		if result := helper.CheckSign(sign, pkg); result {
-			datas["responseNo"] = 0
-		}
-	}
+	datas["responseNo"] = u.checkSign(u)
 	//检查参数
 	if datas["responseNo"] == 0 && len(mobilePhoneNumber) > 0 && len(oldPwd) > 0 && len(newPwd) > 0 {
 		datas["responseNo"] = -1
@@ -261,11 +214,5 @@ func (u *UserController) ModifyPwd() {
 		datas["responseNo"] = -1
 	}
 	//return
-	if datas["responseNo"] == -6 || datas["responseNo"] == -7 {
-		u.Ctx.ResponseWriter.Header().Set("Content-Type", "application/json; charset=utf-8")
-		u.Ctx.ResponseWriter.WriteHeader(http.StatusUnauthorized)
-	} 
-	datas["responseMsg"] = models.ConfigMyResponse[helper.IntToString(datas["responseNo"].(int))]
-	u.Data["json"] = datas
-	u.ServeJson()
+	u.jsonEcho(datas,u)
 }
