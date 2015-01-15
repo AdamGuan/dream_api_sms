@@ -14,6 +14,7 @@ import (
 	"strings"
 	//"net/url"
 	"time"
+	"regexp"
 )
 
 var MyLog *logs.BeeLogger
@@ -115,6 +116,15 @@ func CheckSign(sign string, pkg string) bool {
 		if string(sign) == string(sign2) {
 			return true
 		}
+	}
+	return false
+}
+
+//手机号码有效性验证
+func CheckMPhoneValid(phone string)bool{
+	matched, err := regexp.MatchString("^1[3|4|5|8][0-9]{9}$", phone)
+	if err == nil && matched{
+		return true
 	}
 	return false
 }

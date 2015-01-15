@@ -64,7 +64,7 @@ func (u *SmsController) Smsvalid() {
 	//check sign
 	datas["responseNo"] = u.checkSign(u)
 	//检查参数
-	if datas["responseNo"] == 0 && len(mobilePhoneNumber) > 0 && len(num) > 0 {
+	if datas["responseNo"] == 0 && helper.CheckMPhoneValid(mobilePhoneNumber) && len(num) > 0 {
 		datas["responseNo"] = -1
 		pkgConfig := pkgObj.GetPkgConfig(pkg)
 		if len(pkgConfig) > 0{
@@ -102,13 +102,13 @@ func (u *SmsController) RegisterGetSms() {
 	//check sign
 	datas["responseNo"] = u.checkSign(u)
 	//检查参数
-	if datas["responseNo"] == 0 && len(mobilePhoneNumber) > 0 {
+	if datas["responseNo"] == 0 && helper.CheckMPhoneValid(mobilePhoneNumber) {
 		datas["responseNo"] = -1
 		res2 := userObj.CheckUserNameValid(mobilePhoneNumber)
 		if res2 == 0{
 			pkgConfig := pkgObj.GetPkgConfig(pkg)
 			if len(pkgConfig) > 0{
-				res := smsObj.GetMsm(mobilePhoneNumber,pkgConfig["F_app_id"],pkgConfig["F_app_key"])
+				res := smsObj.GetMsm(mobilePhoneNumber,pkgConfig["F_app_id"],pkgConfig["F_app_key"],pkgConfig["F_app_name"],pkgConfig["F_app_msm_template"])
 				if len(res) == 0{
 					datas["responseNo"] = 0
 				}
@@ -146,13 +146,13 @@ func (u *SmsController) ResetPwdGetSms() {
 	//check sign
 	datas["responseNo"] = u.checkSign(u)
 	//检查参数
-	if datas["responseNo"] == 0 && len(mobilePhoneNumber) > 0 {
+	if datas["responseNo"] == 0 && helper.CheckMPhoneValid(mobilePhoneNumber) {
 		datas["responseNo"] = -1
 		res := userObj.CheckUserNameExists(mobilePhoneNumber)
 		if res {
 			pkgConfig := pkgObj.GetPkgConfig(pkg)
 			if len(pkgConfig) > 0 {
-				res := smsObj.GetMsm(mobilePhoneNumber,pkgConfig["F_app_id"],pkgConfig["F_app_key"])
+				res := smsObj.GetMsm(mobilePhoneNumber,pkgConfig["F_app_id"],pkgConfig["F_app_key"],pkgConfig["F_app_name"],pkgConfig["F_app_msm_template"])
 				if len(res) == 0{
 					datas["responseNo"] = 0
 				}
@@ -190,13 +190,13 @@ func (u *SmsController) FindPwdGetSms() {
 	//check sign
 	datas["responseNo"] = u.checkSign(u)
 	//检查参数
-	if datas["responseNo"] == 0 && len(mobilePhoneNumber) > 0 {
+	if datas["responseNo"] == 0 && helper.CheckMPhoneValid(mobilePhoneNumber) {
 		datas["responseNo"] = -1
 		res := userObj.CheckUserNameExists(mobilePhoneNumber)
 		if res {
 			pkgConfig := pkgObj.GetPkgConfig(pkg)
 			if len(pkgConfig) > 0 {
-				res := smsObj.GetMsm(mobilePhoneNumber,pkgConfig["F_app_id"],pkgConfig["F_app_key"])
+				res := smsObj.GetMsm(mobilePhoneNumber,pkgConfig["F_app_id"],pkgConfig["F_app_key"],pkgConfig["F_app_name"],pkgConfig["F_app_msm_template"])
 				if len(res) == 0{
 					datas["responseNo"] = 0
 				}

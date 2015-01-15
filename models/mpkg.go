@@ -22,6 +22,8 @@ func (u *MPkg) GetPkgConfig(pkg string)map[string]string{
 			result["F_app_id"] = maps[0]["F_app_id"].(string)
 			result["F_app_key"] = maps[0]["F_app_key"].(string)
 			result["F_app_master_key"] = maps[0]["F_app_master_key"].(string)
+			result["F_app_msm_template"] = maps[0]["F_app_msm_template"].(string)
+			result["F_app_name"] = maps[0]["F_app_name"].(string)
 		}
 	}
 	return result
