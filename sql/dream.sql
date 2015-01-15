@@ -1,5 +1,5 @@
 -- --------------------------------------------------------
--- 主机:                           127.0.0.1
+-- 主机:                           192.168.16.148
 -- 服务器版本:                        5.5.40-0ubuntu0.14.04.1-log - (Ubuntu)
 -- 服务器操作系统:                      debian-linux-gnu
 -- HeidiSQL 版本:                  8.3.0.4694
@@ -24,15 +24,16 @@ CREATE TABLE IF NOT EXISTS `t_config_pkg` (
   `F_app_id` varchar(250) NOT NULL COMMENT 'leancloud对应的app id',
   `F_app_key` varchar(250) NOT NULL COMMENT 'leancloud对应的app key',
   `F_app_master_key` varchar(250) NOT NULL COMMENT 'leancloud对应的master key',
+  `F_app_msm_template` varchar(250) NOT NULL COMMENT 'leancloud对应的短信模板名',
   UNIQUE KEY `F_pkg` (`F_pkg`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='包相关信息';
 
--- 正在导出表  dream_api_sms.t_config_pkg 的数据：~1 rows (大约)
+-- 正在导出表  dream_api_sms.t_config_pkg 的数据：~2 rows (大约)
 DELETE FROM `t_config_pkg`;
 /*!40000 ALTER TABLE `t_config_pkg` DISABLE KEYS */;
-INSERT INTO `t_config_pkg` (`F_pkg`, `F_app_name`, `F_app_id`, `F_app_key`, `F_app_master_key`) VALUES
-	('abc', 'default', '1ogxif29tbur554rh6n2m9yefhajgqkjqwspvr4lzu9rczxvn', '2qdmwrqh979waj4emidd0yh07jcu9xm5rz4vuqam1bt4lq0k', '06midcv0qs66lq3w4e8r7s7njngcd18t19wv53huegtga47s'),
-	('com.readboy.gaokao.debug', 'com.readboy.gaokao.debug', '1ogxif29tbur554rh6n2m9yefhajgqkjqwspvr4lzu9rczxvn', '2qdmwrqh979waj4emidd0yh07jcu9xm5rz4vuqam1bt4lq0k', '06midcv0qs66lq3w4e8r7s7njngcd18t19wv53huegtga47s');
+INSERT INTO `t_config_pkg` (`F_pkg`, `F_app_name`, `F_app_id`, `F_app_key`, `F_app_master_key`, `F_app_msm_template`) VALUES
+	('abc', '刷题吧', '1ogxif29tbur554rh6n2m9yefhajgqkjqwspvr4lzu9rczxvn', '2qdmwrqh979waj4emidd0yh07jcu9xm5rz4vuqam1bt4lq0k', '06midcv0qs66lq3w4e8r7s7njngcd18t19wv53huegtga47s', 'template1'),
+	('com.readboy.gaokao.debug', '刷题吧', '1ogxif29tbur554rh6n2m9yefhajgqkjqwspvr4lzu9rczxvn', '2qdmwrqh979waj4emidd0yh07jcu9xm5rz4vuqam1bt4lq0k', '06midcv0qs66lq3w4e8r7s7njngcd18t19wv53huegtga47s', 'template1');
 /*!40000 ALTER TABLE `t_config_pkg` ENABLE KEYS */;
 
 
@@ -43,7 +44,7 @@ CREATE TABLE IF NOT EXISTS `t_config_response` (
   `F_response_msg` varchar(50) NOT NULL COMMENT '响应信息'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='api的响应配置';
 
--- 正在导出表  dream_api_sms.t_config_response 的数据：7 rows
+-- 正在导出表  dream_api_sms.t_config_response 的数据：9 rows
 DELETE FROM `t_config_response`;
 /*!40000 ALTER TABLE `t_config_response` DISABLE KEYS */;
 INSERT INTO `t_config_response` (`F_response_no`, `F_response_msg`) VALUES
@@ -51,10 +52,11 @@ INSERT INTO `t_config_response` (`F_response_no`, `F_response_msg`) VALUES
 	(-1, '失败'),
 	(-2, '已注册'),
 	(-3, '密码不符合规则'),
-	(-4, '没有注册'),
 	(-5, '用户名或密码错误'),
 	(-6, '签名错误'),
-	(-7, '包名不存在');
+	(-4, '没有注册'),
+	(-7, '包名错误'),
+	(-8, '现有密码错误');
 /*!40000 ALTER TABLE `t_config_response` ENABLE KEYS */;
 
 
@@ -63,13 +65,18 @@ DROP TABLE IF EXISTS `t_user`;
 CREATE TABLE IF NOT EXISTS `t_user` (
   `F_user_name` varchar(50) NOT NULL COMMENT '用户名',
   `F_user_password` char(40) NOT NULL COMMENT '用户密码',
-  `F_pkg` varchar(250) NOT NULL DEFAULT 'default' COMMENT '包名',
   UNIQUE KEY `F_user_name` (`F_user_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户表';
 
--- 正在导出表  dream_api_sms.t_user 的数据：~0 rows (大约)
+-- 正在导出表  dream_api_sms.t_user 的数据：~5 rows (大约)
 DELETE FROM `t_user`;
 /*!40000 ALTER TABLE `t_user` DISABLE KEYS */;
+INSERT INTO `t_user` (`F_user_name`, `F_user_password`) VALUES
+	('13425088117', '123456'),
+	('13432368694', '123456'),
+	('13823014310', '123456'),
+	('15220516451', '123456'),
+	('18688161481', 'kalsat152145');
 /*!40000 ALTER TABLE `t_user` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
