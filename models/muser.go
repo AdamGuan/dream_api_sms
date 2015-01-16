@@ -92,12 +92,15 @@ func (u *MUser) ModifyUserPwd(userName string,userPwd string)int{
 		result = -1
 		//写入数据库
 		o := orm.NewOrm()
-		res, err := o.Raw("UPDATE t_user SET F_user_password=? WHERE F_user_name=?",userPwd,userName).Exec()
+		_, err := o.Raw("UPDATE t_user SET F_user_password=? WHERE F_user_name=?",userPwd,userName).Exec()
 		if err == nil {
+			result = 0
+			/*
 			num, _ := res.RowsAffected()
 			if num >0{
 				result = 0
 			}
+			*/
 		}
 	}
 	return result

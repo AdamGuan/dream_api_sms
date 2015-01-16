@@ -7,13 +7,17 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"os"
 	//"dream_api_sms/helper"
+	"time"
 )
 
 //key:响应代码，value:响应信息
 var ConfigMyResponse map[string]string
 
 func init() {
-	orm.RegisterDataBase("default", "mysql", "root:root@/dream_api_sms?charset=utf8&loc=Asia%2FShanghai")
+	maxIdle := 1000
+	maxConn := 2000
+	orm.RegisterDataBase("default", "mysql", "root:root@/dream_api_sms?charset=utf8&loc=Asia%2FShanghai",maxIdle, maxConn)
+	orm.DefaultTimeLoc = time.UTC
 	if beego.RunMode == "dev"{
 		orm.Debug = true
 	}

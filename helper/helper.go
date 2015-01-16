@@ -128,3 +128,13 @@ func CheckMPhoneValid(phone string)bool{
 	}
 	return false
 }
+
+//密码有效性验证
+func CheckPwdValid(pwd string)bool{
+	//pwd = strings.TrimSpace(pwd)
+	matched, err := regexp.MatchString("^\\w{6,40}$", pwd)
+	if err == nil && matched{
+		return true
+	}
+	return false
+}

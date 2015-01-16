@@ -26,7 +26,7 @@ func (u0 *UserController) jsonEcho(datas map[string]interface{},u *UserControlle
 }
 
 //sign check
-func (u0 *UserController) checkSign(u *UserController)int {
+func (u0 *UserController) checkSign(u *UserController)int {	
 	result := -6
 	pkg := u.Ctx.Request.Header.Get("Pkg")
 	sign := u.Ctx.Request.Header.Get("Sign")
@@ -62,7 +62,7 @@ func (u *UserController) Register() {
 	//check sign
 	datas["responseNo"] = u.checkSign(u)
 	//检查参数
-	if datas["responseNo"] == 0 && helper.CheckMPhoneValid(mobilePhoneNumber) && len(pwd) > 0 {
+	if datas["responseNo"] == 0 && helper.CheckMPhoneValid(mobilePhoneNumber) && helper.CheckPwdValid(pwd) {
 		datas["responseNo"] = -1
 		res2 := userObj.AddUser(mobilePhoneNumber,pwd)
 		datas["responseNo"] = res2
@@ -94,7 +94,7 @@ func (u *UserController) ResetPwd() {
 	//check sign
 	datas["responseNo"] = u.checkSign(u)
 	//检查参数
-	if datas["responseNo"] == 0 && helper.CheckMPhoneValid(mobilePhoneNumber) && len(pwd) > 0 {
+	if datas["responseNo"] == 0 && helper.CheckMPhoneValid(mobilePhoneNumber) && helper.CheckPwdValid(pwd) {
 		datas["responseNo"] = -1
 		res2 := userObj.ModifyUserPwd(mobilePhoneNumber,pwd)
 		datas["responseNo"] = res2
@@ -126,7 +126,7 @@ func (u *UserController) CheckUserAndPwd() {
 	//check sign
 	datas["responseNo"] = u.checkSign(u)
 	//检查参数
-	if datas["responseNo"] == 0 && helper.CheckMPhoneValid(mobilePhoneNumber) && len(pwd) > 0 {
+	if datas["responseNo"] == 0 && helper.CheckMPhoneValid(mobilePhoneNumber) && helper.CheckPwdValid(pwd) {
 		datas["responseNo"] = -1
 		res := userObj.CheckUserAndPwd(mobilePhoneNumber,pwd)
 		if res{
@@ -202,7 +202,7 @@ func (u *UserController) ModifyPwd() {
 	//check sign
 	datas["responseNo"] = u.checkSign(u)
 	//检查参数
-	if datas["responseNo"] == 0 && helper.CheckMPhoneValid(mobilePhoneNumber) && len(oldPwd) > 0 && len(newPwd) > 0 {
+	if datas["responseNo"] == 0 && helper.CheckMPhoneValid(mobilePhoneNumber) && helper.CheckPwdValid(oldPwd) && helper.CheckPwdValid(newPwd) {
 		datas["responseNo"] = -1
 		if userObj.CheckUserAndPwd(mobilePhoneNumber,oldPwd){
 			res2 := userObj.ModifyUserPwd(mobilePhoneNumber,newPwd)
