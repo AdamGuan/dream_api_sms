@@ -17,6 +17,7 @@ func init() {
 	maxIdle := 1000
 	maxConn := 2000
 	orm.RegisterDataBase("default", "mysql", "root:root@/dream_api_sms?charset=utf8&loc=Asia%2FShanghai",maxIdle, maxConn)
+	//orm.RegisterDataBase("default", "mysql", "root:mysqldream@/dream_api_sms?charset=utf8&loc=Asia%2FShanghai",maxIdle, maxConn)
 	orm.DefaultTimeLoc = time.UTC
 	if beego.RunMode == "dev"{
 		orm.Debug = true

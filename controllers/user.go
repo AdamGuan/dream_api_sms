@@ -26,7 +26,7 @@ func (u0 *UserController) jsonEcho(datas map[string]interface{},u *UserControlle
 }
 
 //sign check
-func (u0 *UserController) checkSign(u *UserController)int {	
+func (u0 *UserController) checkSign(u *UserController)int {
 	result := -6
 	pkg := u.Ctx.Request.Header.Get("Pkg")
 	sign := u.Ctx.Request.Header.Get("Sign")
