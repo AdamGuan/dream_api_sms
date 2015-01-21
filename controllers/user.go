@@ -220,3 +220,35 @@ func (u *UserController) ModifyPwd() {
 	//return
 	u.jsonEcho(datas,u)
 }
+
+// @Title 验证手机号码是否已注册
+// @Description 验证手机号码是否已注册
+// @Param	mobilePhoneNumber	path	string	true	手机号码
+// @Param	sign			header	string	true	签名
+// @Param	pkg			header	string	true	包名
+// @Success	200 {object} models.MResp
+// @Failure 401 无权访问
+// @router /exists/:mobilePhoneNumber [get]
+func (u *UserController) CheckUserExists() {
+	//ini return
+	datas := map[string]interface{}{"responseNo": -1}
+	//model ini
+	var userObj *models.MUser
+	//parse request parames
+	u.Ctx.Request.ParseForm()
+	mobilePhoneNumber := u.Ctx.Input.Param(":mobilePhoneNumber")
+	//check sign
+	datas["responseNo"] = u.checkSign(u)
+	//检查参数
+	if datas["responseNo"] == 0 && helper.CheckMPhoneValid(mobilePhoneNumber) {
+		if userObj.CheckUserNameExists(mobilePhoneNumber){
+			datas["responseNo"] = -2
+		}else{
+			datas["responseNo"] = -4
+		}
+	}else if datas["responseNo"] == 0{
+		datas["responseNo"] = -1
+	}
+	//return
+	u.jsonEcho(datas,u)
+}

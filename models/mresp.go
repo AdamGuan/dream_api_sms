@@ -10,3 +10,9 @@ type MFindPwdResp struct {
 	responseMsg string
 	password string
 }
+
+type MUserExistsResp struct {
+	responseNo  int
+	responseMsg string
+	exists string
+}

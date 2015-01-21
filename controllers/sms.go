@@ -107,10 +107,14 @@ func (u *SmsController) RegisterGetSms() {
 		res2 := userObj.CheckUserNameValid(mobilePhoneNumber)
 		if res2 == 0{
 			pkgConfig := pkgObj.GetPkgConfig(pkg)
-			if len(pkgConfig) > 0{
+			if len(pkgConfig) > 0 && smsObj.CheckMsmRateValid(mobilePhoneNumber,pkg){
+				smsObj.AddMsmRate(mobilePhoneNumber,pkg)
 				res := smsObj.GetMsm(mobilePhoneNumber,pkgConfig["F_app_id"],pkgConfig["F_app_key"],pkgConfig["F_app_name"],pkgConfig["F_app_msm_template"])
 				if len(res) == 0{
 					datas["responseNo"] = 0
+					smsObj.AddMsmRate(mobilePhoneNumber,pkg)
+				}else{
+					smsObj.DeleteMsmRate(mobilePhoneNumber,pkg)
 				}
 			}
 		}else{
@@ -151,10 +155,14 @@ func (u *SmsController) ResetPwdGetSms() {
 		res := userObj.CheckUserNameExists(mobilePhoneNumber)
 		if res {
 			pkgConfig := pkgObj.GetPkgConfig(pkg)
-			if len(pkgConfig) > 0 {
+			if len(pkgConfig) > 0 && smsObj.CheckMsmRateValid(mobilePhoneNumber,pkg) {
+				smsObj.AddMsmRate(mobilePhoneNumber,pkg)
 				res := smsObj.GetMsm(mobilePhoneNumber,pkgConfig["F_app_id"],pkgConfig["F_app_key"],pkgConfig["F_app_name"],pkgConfig["F_app_msm_template"])
 				if len(res) == 0{
 					datas["responseNo"] = 0
+					smsObj.AddMsmRate(mobilePhoneNumber,pkg)
+				}else{
+					smsObj.DeleteMsmRate(mobilePhoneNumber,pkg)
 				}
 			}
 		}else{
@@ -195,10 +203,14 @@ func (u *SmsController) FindPwdGetSms() {
 		res := userObj.CheckUserNameExists(mobilePhoneNumber)
 		if res {
 			pkgConfig := pkgObj.GetPkgConfig(pkg)
-			if len(pkgConfig) > 0 {
+			if len(pkgConfig) > 0 && smsObj.CheckMsmRateValid(mobilePhoneNumber,pkg) {
+				smsObj.AddMsmRate(mobilePhoneNumber,pkg)
 				res := smsObj.GetMsm(mobilePhoneNumber,pkgConfig["F_app_id"],pkgConfig["F_app_key"],pkgConfig["F_app_name"],pkgConfig["F_app_msm_template"])
 				if len(res) == 0{
 					datas["responseNo"] = 0
+					smsObj.AddMsmRate(mobilePhoneNumber,pkg)
+				}else{
+					smsObj.DeleteMsmRate(mobilePhoneNumber,pkg)
 				}
 			}
 		}else{

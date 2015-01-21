@@ -83,4 +83,11 @@ func init() {
 			[]string{"put"},
 			nil})
 
+	beego.GlobalControllerRouter["dream_api_sms/controllers:UserController"] = append(beego.GlobalControllerRouter["dream_api_sms/controllers:UserController"],
+		beego.ControllerComments{
+			"CheckUserExists",
+			`/exists/:mobilePhoneNumber`,
+			[]string{"get"},
+			nil})
+
 }

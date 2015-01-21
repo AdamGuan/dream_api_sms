@@ -1,12 +1,12 @@
 -- --------------------------------------------------------
--- 主机:                           192.168.16.148
--- 服务器版本:                        5.5.40-0ubuntu0.14.04.1-log - (Ubuntu)
+-- 主机:                           127.0.0.1
+-- 服务器版本:                        5.5.40-0ubuntu1 - (Ubuntu)
 -- 服务器操作系统:                      debian-linux-gnu
--- HeidiSQL 版本:                  8.3.0.4694
+-- HeidiSQL 版本:                  9.1.0.4867
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET NAMES utf8 */;
+/*!40101 SET NAMES utf8mb4 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS `t_config_response` (
   `F_response_msg` varchar(50) NOT NULL COMMENT '响应信息'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='api的响应配置';
 
--- 正在导出表  dream_api_sms.t_config_response 的数据：9 rows
+-- 正在导出表  dream_api_sms.t_config_response 的数据：10 rows
 DELETE FROM `t_config_response`;
 /*!40000 ALTER TABLE `t_config_response` DISABLE KEYS */;
 INSERT INTO `t_config_response` (`F_response_no`, `F_response_msg`) VALUES
@@ -52,12 +52,27 @@ INSERT INTO `t_config_response` (`F_response_no`, `F_response_msg`) VALUES
 	(-1, '失败'),
 	(-2, '已注册'),
 	(-3, '密码不符合规则'),
+	(-4, '没有注册'),
 	(-5, '用户名或密码错误'),
 	(-6, '签名错误'),
-	(-4, '没有注册'),
-	(-7, '包名错误'),
-	(-8, '现有密码错误');
+	(-7, '包名不存在'),
+	(-8, '现有密码错误'),
+	(-9, '密码错误');
 /*!40000 ALTER TABLE `t_config_response` ENABLE KEYS */;
+
+
+-- 导出  表 dream_api_sms.t_sms_rate 结构
+DROP TABLE IF EXISTS `t_sms_rate`;
+CREATE TABLE IF NOT EXISTS `t_sms_rate` (
+  `F_action` char(32) NOT NULL COMMENT '动作，由(手机号码，包名，一起md5构成)',
+  `F_last_timestamp` datetime NOT NULL COMMENT '时间',
+  UNIQUE KEY `F_action` (`F_action`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='记录短信发送的频率，用于限制短信的频繁发送，暂时的，会改为redis';
+
+-- 正在导出表  dream_api_sms.t_sms_rate 的数据：0 rows
+DELETE FROM `t_sms_rate`;
+/*!40000 ALTER TABLE `t_sms_rate` DISABLE KEYS */;
+/*!40000 ALTER TABLE `t_sms_rate` ENABLE KEYS */;
 
 
 -- 导出  表 dream_api_sms.t_user 结构
@@ -65,18 +80,13 @@ DROP TABLE IF EXISTS `t_user`;
 CREATE TABLE IF NOT EXISTS `t_user` (
   `F_user_name` varchar(50) NOT NULL COMMENT '用户名',
   `F_user_password` char(40) NOT NULL COMMENT '用户密码',
+  `F_pkg` varchar(250) NOT NULL DEFAULT 'default' COMMENT '包名',
   UNIQUE KEY `F_user_name` (`F_user_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户表';
 
--- 正在导出表  dream_api_sms.t_user 的数据：~5 rows (大约)
+-- 正在导出表  dream_api_sms.t_user 的数据：~0 rows (大约)
 DELETE FROM `t_user`;
 /*!40000 ALTER TABLE `t_user` DISABLE KEYS */;
-INSERT INTO `t_user` (`F_user_name`, `F_user_password`) VALUES
-	('13425088117', '123456'),
-	('13432368694', '123456'),
-	('13823014310', '123456'),
-	('15220516451', '123456'),
-	('18688161481', 'kalsat152145');
 /*!40000 ALTER TABLE `t_user` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
