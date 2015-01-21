@@ -128,11 +128,15 @@ func (u *UserController) CheckUserAndPwd() {
 	//检查参数
 	if datas["responseNo"] == 0 && helper.CheckMPhoneValid(mobilePhoneNumber) && helper.CheckPwdValid(pwd) {
 		datas["responseNo"] = -1
-		res := userObj.CheckUserAndPwd(mobilePhoneNumber,pwd)
-		if res{
-			datas["responseNo"] = 0
+		if !userObj.CheckUserNameExists(mobilePhoneNumber){
+			datas["responseNo"] = -4
 		}else{
-			datas["responseNo"] = -5
+			res := userObj.CheckUserAndPwd(mobilePhoneNumber,pwd)
+			if res{
+				datas["responseNo"] = 0
+			}else{
+				datas["responseNo"] = -9
+			}
 		}
 	}else if datas["responseNo"] == 0{
 		datas["responseNo"] = -5

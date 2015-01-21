@@ -8,16 +8,21 @@ import (
 	"os"
 	//"dream_api_sms/helper"
 	"time"
+	"github.com/astaxie/beego/config" 
 )
 
 //key:响应代码，value:响应信息
 var ConfigMyResponse map[string]string
 
 func init() {
-	maxIdle := 1000
-	maxConn := 2000
-	orm.RegisterDataBase("default", "mysql", "root:root@/dream_api_sms?charset=utf8&loc=Asia%2FShanghai",maxIdle, maxConn)
-	//orm.RegisterDataBase("default", "mysql", "root:mysqldream@/dream_api_sms?charset=utf8&loc=Asia%2FShanghai",maxIdle, maxConn)
+	
+	dbconf, _ := config.NewConfig("ini", "conf/db.conf")
+	maxIdle,_ := dbconf.Int("maxIdle")
+	maxConn,_ := dbconf.Int("maxConn")
+	userName := dbconf.String(beego.RunMode+"::userName")
+	password := dbconf.String(beego.RunMode+"::password")
+	dbName := dbconf.String("dbName")
+	orm.RegisterDataBase("default", "mysql", userName+":"+password+"@/"+dbName+"?charset=utf8&loc=Asia%2FShanghai",maxIdle, maxConn)
 	orm.DefaultTimeLoc = time.UTC
 	if beego.RunMode == "dev"{
 		orm.Debug = true
